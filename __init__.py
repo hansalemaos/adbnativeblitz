@@ -14,17 +14,19 @@ from math import floor
 
 
 def sleep(secs):
-    if secs == 0:
+    try:
+        if secs == 0:
+            return
+        maxrange = 50 * secs
+        if isinstance(maxrange, float):
+            sleeplittle = floor(maxrange)
+            sleep_((maxrange - sleeplittle) / 50)
+            maxrange = int(sleeplittle)
+        if maxrange > 0:
+            for _ in range(maxrange):
+                sleep_(0.016)
+    except KeyboardInterrupt:
         return
-    maxrange = 50 * secs
-    if isinstance(maxrange, float):
-        sleeplittle = floor(maxrange)
-        sleep_((maxrange - sleeplittle) / 50)
-        maxrange = int(sleeplittle)
-    if maxrange > 0:
-        for _ in range(maxrange):
-            sleep_(0.016)
-
 
 iswindows = "win" in platform.platform().lower()
 if iswindows:
@@ -211,7 +213,7 @@ startscreenrecord() {{
 time_interval={self.timelimit}
 size="{self.size}"
 bitrate="{self.bitrate}"
-screenrecord --output-format=h264 --time-limit 1 --size "$size" --bit-rate "$bitrate" -
+#screenrecord --output-format=h264 --time-limit 1 --size "$size" --bit-rate "$bitrate" -
 while true; do
     startscreenrecord $time_interval "$size" "$bitrate" 
 done"""
@@ -296,6 +298,7 @@ done"""
             stderr=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stdin=subprocess.DEVNULL,
+            bufsize=0,
             **invisibledict,
         )
         alldata = []
